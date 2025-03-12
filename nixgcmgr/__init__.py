@@ -88,15 +88,16 @@ def main() -> None:
     for gcroot, (target, lstat) in links.items():
         ctime = datetime.datetime.fromtimestamp(lstat.st_ctime)
         ago = (now - ctime).days
-        if (not (args.dry_run or args.noconfirm)) or ago >= args.max_age:
-            print(f" - {gcroot} -> {target}")
-            if lstat.st_uid != whoami:
-                username = pwd.getpwuid(lstat.st_uid).pw_name
-                print(f"   - owned by:   {username}")
-            print(f"   - created at: {ctime} ({ago} days ago)")
-            if not (args.dry_run or args.noconfirm and ago < args.max_age):
-                print( "   - inegligible for deletion")
-            print()
+
+        print(f" - {gcroot} -> {target}")
+        if lstat.st_uid != whoami:
+            username = pwd.getpwuid(lstat.st_uid).pw_name
+            print(f"   - owned by:   {username}")
+        print(f"   - created at: {ctime} ({ago} days ago)")
+        if (args.dry_run or not args.noconfirm) and ago < args.max_age:
+            print( "   - inegligible for deletion")
+        print()
+
         if ago >= args.max_age and not args.dry_run:
             if args.noconfirm or yes_or_no("Delete", default=False):
                 os.unlink(target)
