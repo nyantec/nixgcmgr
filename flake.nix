@@ -6,9 +6,7 @@
 
   outputs = { self, nixpkgs, flake-utils }: {
     overlay = final: prev: {
-      nixgcmgr = final.callPackage ./default.nix {
-        python3Packages = final.python311Packages;
-      };
+      nixgcmgr = final.callPackage ./default.nix {};
     };
   } // (flake-utils.lib.eachDefaultSystem (system: let
     pkgs = import nixpkgs {
